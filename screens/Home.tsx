@@ -1,9 +1,11 @@
-import React from "react";
-import { SafeAreaView, StyleSheet, View, Text, Button } from "react-native";
+import React, { useEffect } from "react";
+import { SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import Tasks from "./Tasks"
 import store from "../storage/Store";
 import { Category } from "../types";
-import { Avatar } from 'react-native-paper';
+import { Avatar, Button } from 'react-native-paper';
+import { Icon } from "react-native-paper/lib/typescript/components/Avatar/Avatar";
 
 const Title = ({ nav }: any) => {
     return (
@@ -13,10 +15,12 @@ const Title = ({ nav }: any) => {
             </Text>
             <View style={styles.iconContainer}>
                 <Avatar.Icon
-                    style={{ backgroundColor: 'black' }}
-                    size={50} icon='plus' color="white"
+                    style={{ backgroundColor: 'white' }}
+                    size={50} 
+                    icon='plus' 
+                    color="black"
                     onTouchEnd={() => {
-                        nav.navigate("NewTask")
+                        nav.navigate("NewCategory")
                     }}
                 />
             </View>
@@ -26,7 +30,7 @@ const Title = ({ nav }: any) => {
 
 const DateDisplay = () => {
     let dateObj = new Date()
-    
+
     let months = [
         "January",
         "Febuary",
@@ -40,13 +44,12 @@ const DateDisplay = () => {
         time: ((dateObj.getHours() > 12) ? (dateObj.getHours() - 12) : (dateObj.getHours())) + ":" + dateObj.getMinutes()
     }
 
-
     return (
         <View style={styles.dateContainer}>
-            <Text style = {styles.dateText}>
+            <Text style={styles.dateText}>
                 {date.month + " " + date.day}
             </Text>
-            <Text style = {styles.dateText}>
+            <Text style={styles.dateText}>
                 {date.time}
             </Text>
 
@@ -55,21 +58,47 @@ const DateDisplay = () => {
 }
 
 export default function Home({ navigation }: any) {
-    let cateroies: Array<Category> = store.getState()
+    let cateroies: Array<Category> = store.getState().categories
+    const isFocused = useIsFocused()
+
+    useEffect(() => {
+        //update on change
+    }, [isFocused])
 
     return (
         <SafeAreaView style={styles.backGround}>
             <View style={styles.backGround}>
                 <Title nav={navigation} />
                 <DateDisplay />
-                {cateroies.map((element) => {
+                {cateroies.map((element: Category, i: number ) => {
                     return (
-                        <View>
-                            <Button
-                                title={element.name}
-                                onPress={navigation.navigate("Task", { tasks: element.tasks })}
+                        <TouchableOpacity
+                            key={i}
+                            style={[{
+                                borderRadius: 5,
+                                backgroundColor: '#D5D5D5',
+                                height: 64,
+                                marginTop: 30,
+                                marginLeft: 20,
+                                marginRight: 20,
+                                display: 'flex',
+                                flexDirection: 'row'
+                            },  styles.shadowProp]}
+                            onPress={() => navigation.navigate("Tasks", { category: element })}
+                        >
+                            <Text style={{ color: 'white' }}>{element.name}</Text>
+                            <Avatar.Icon
+                                style={{ backgroundColor: 'lightgrey'}}
+                                size={50} 
+                                icon={({ size, color }) => (
+                                    <Image
+                                        source={require('../assets/icons/view_headline.png')}
+                                        style={{ width: size, height: size, tintColor: color }}
+                                    />
+                                )} 
+                                color="white"
                             />
-                        </View>
+                        </TouchableOpacity>
                     )
                 })}
             </View>
@@ -82,33 +111,39 @@ const styles = StyleSheet.create({
         position: 'absolute',
         marginTop: 1,
         left: '85%',
-
+        backgroundColor: 'white'
     },
-    dateText:{
+    dateText: {
         color: 'black',
         marginLeft: 20,
         marginTop: 22,
         fontSize: 34
     },
     backGround: {
-        backgroundColor: 'black',
+        backgroundColor: 'white',
         width: '100%',
         height: '100%'
     },
     title: {
         marginTop: 10,
-        color: '#ffffff',
+        color: 'black',
         fontSize: 25,
         textAlign: 'center'
     },
     dateContainer: {
         borderRadius: 25,
-        backgroundColor: 'white',
+        backgroundColor: 'blue',
         height: 150,
         marginTop: 30,
         marginLeft: 20,
         marginRight: 20,
         display: 'flex',
-        flexDirection:'column'
-    }
+        flexDirection: 'column'
+    },
+    shadowProp: {
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+      }
 })

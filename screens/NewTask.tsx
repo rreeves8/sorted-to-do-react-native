@@ -1,11 +1,22 @@
 import React from "react"
 import { View, Text, StyleSheet, SafeAreaView, Image } from "react-native"
 import { Avatar, TextInput } from 'react-native-paper';
+import store from "../storage/Store";
+import { Benefit } from "../types";
 
 const Benefits = () => {
+    let benefits: Array<Benefit> = store.getState().benefits
+    
     return(
         <View>
-
+            {benefits.map((e) => {
+                return (
+                    <Text>
+                        {e}
+                    </Text>
+                )
+            })}
+            
         </View>
     )
 }

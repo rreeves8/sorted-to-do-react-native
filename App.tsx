@@ -4,26 +4,25 @@ import AppLoading from 'expo-app-loading';
 import { useState } from 'react';
 import store from './storage/Store'
 import { getData } from './storage/Persistent';
-import { Category } from './types';
+import { Category, State } from './types';
 import Home from "./screens/Home";
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Tasks from './screens/Tasks';
 import NewTasks from './screens/NewTask';
+import NewCategory from './screens/NewCategory'
+
 
 const Stack = createStackNavigator();
 
 const loadData = async () => {
-    let tasks = await getData()
-
-    if (tasks === null) {
-        tasks = new Array<Category>()
-    }
+    let savedState: State = await getData()
 
     store.dispatch({
-        type: "loadTasks",
-        payload: tasks
+        type: "loadSaved",
+        payload: savedState
     })
+    console.log(store.getState())
 }
 
 const Root = () => {
@@ -33,6 +32,7 @@ const Root = () => {
                 <Stack.Screen name='Home' component={Home} />
                 <Stack.Screen name='Tasks' component={Tasks} />
                 <Stack.Screen name='NewTask' component={NewTasks} />
+                <Stack.Screen name='NewCategory' component={NewCategory} />
             </Stack.Navigator>
         </NavigationContainer>
     )
