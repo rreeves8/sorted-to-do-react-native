@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo } from "react"
-import { View, Text, StyleSheet, SafeAreaView, Image } from "react-native"
+import { View, Text, StyleSheet, SafeAreaView, Image, GestureResponderEvent } from "react-native"
 import { Avatar, TextInput, Button, } from 'react-native-paper';
+import { CategoryProvider } from "../providers/CategoryProvider";
 import store from "../storage/Store";
-import { Task } from "../types";
+import { Category, Task } from "../types";
+import { styles } from "../styles/styles";
 
 export default function NewCategory({ navigation }: any) {
     const [text, setText] = React.useState("");
@@ -18,7 +20,7 @@ export default function NewCategory({ navigation }: any) {
         <SafeAreaView style={styles.backGround}>
             <View style={{ display: 'flex', flexDirection: 'row' }}>
                 <Avatar.Icon
-                    style={{ backgroundColor: 'black', marginLeft: '2%' }}
+                    style={{ backgroundColor: '#F5F5F5', marginLeft: '2%' }}
                     size={50}
                     icon={({ size, color }) => (
                         <Image
@@ -26,12 +28,12 @@ export default function NewCategory({ navigation }: any) {
                             style={{ width: size, height: size, tintColor: color }}
                         />
                     )}
-                    color="white"
+                    color="black"
                     onTouchEnd={() => {
                         navigation.navigate("Home")
                     }}
                 />
-                <Text style={{ marginTop: 13, color: 'white', fontSize: 20, marginLeft: '18%' }}>
+                <Text style={{ marginTop: 13, color: 'black', fontSize: 20, marginLeft: '18%' }}>
                     Name Of Category
                 </Text>
             </View>
@@ -57,18 +59,22 @@ export default function NewCategory({ navigation }: any) {
                     icon="check"
                     mode="text"
                     style={{ marginTop: 24 }}
-                    labelStyle={{ fontSize: 45, color: 'white' }}
+                    labelStyle={{ fontSize: 45, color: 'black' }}
                     onPress={() => {
                         if(text === ''){
                             setError(true)
                         }
                         else{
+                            let newCat = store.getState().categories
+                            
+                            newCat.push({
+                                name: text,
+                                tasks: new Array<Task>()
+                            })
+
                             store.dispatch({
                                 type: 'addCategory', 
-                                payload: {
-                                    name: text,
-                                    tasks: new Array<Task>()
-                                }
+                                payload: newCat
                             })
                             console.log(store.getState().categories[0].name)
                             
@@ -81,21 +87,3 @@ export default function NewCategory({ navigation }: any) {
         </SafeAreaView >
     )
 }
-
-const styles = StyleSheet.create({
-    iconContainer: {
-        marginTop: 1,
-        left: '85%',
-    },
-    dateText: {
-        color: 'black',
-        marginLeft: 20,
-        marginTop: 22,
-        fontSize: 34
-    },
-    backGround: {
-        backgroundColor: 'black',
-        width: '100%',
-        height: '100%'
-    },
-})

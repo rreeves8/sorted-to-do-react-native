@@ -9,14 +9,14 @@ type NewTask = {
 
 type type = 'loadSaved' | "addCategory" | "addBenefit" | "addTask" | "saveState"
 
-const reducer = (state: State, action: { type: type, payload: State | Category | Benefit | NewTask }) => {
+const reducer = (state: State, action: { type: type, payload: State | Array<Category> | Benefit | NewTask }) => {
     switch (action.type) {
         case 'loadSaved':
             state = action.payload as State
             return state
         
         case 'addCategory':
-            state.categories.push(action.payload as Category)
+            state.categories = action.payload as Array<Category>
             return state
         
         case 'addBenefit':
