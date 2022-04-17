@@ -6,10 +6,10 @@ import { MenuProvider } from "../providers/MenuProvider"
 import { Category } from "../types"
 import MovableMenu from "./MovableMenu"
 
-export default function Categories(props: { nav: any }) {
+export default function Categories(props: { nav: any, setScroll: any }) {
     //@ts-ignore
     const { categoryContext } = useContext(CatContext);
-
+    
     return (
         <View style={{
             display: 'flex',
@@ -27,6 +27,7 @@ export default function Categories(props: { nav: any }) {
                             }}
                         >
                             <MovableMenu
+                                setScroll={props.setScroll}
                                 nav={props.nav}
                                 i={i}
                                 element={element}

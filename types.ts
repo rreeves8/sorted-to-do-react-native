@@ -1,12 +1,11 @@
 type Benefit = {
     name: string
-    importance: number
+    ranking: number
 }
 
 type Task = {
     name: string
     completion: boolean
-    description: string
     benefits: Array<Benefit>
 }
 

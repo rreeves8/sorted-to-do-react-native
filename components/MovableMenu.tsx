@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef, useMemo } from "react";
-import { Animated, PanResponder, View, Text, Image, TouchableOpacity, Easing } from "react-native";
+import { Animated, PanResponder, View, Text, Image, Pressable, Easing } from "react-native";
 import { Avatar } from "react-native-paper";
 import { styles } from "../styles/styles";
 import { Category } from "../types";
@@ -7,17 +7,28 @@ import { CatContext } from "../providers/CategoryProvider";
 import { MenuContext } from "../providers/MenuProvider";
 import { BlurView } from 'expo-blur';
 
-const CategoryView = (props: { element: Category, nav: any, i: number }) => {
+const CategoryView = (props: { element: Category, nav: any, i: number, setScroll: any }) => {
     const [style, setStyle] = useState(false)
+    const [pressed, setPressed] = useState(false)
 
     return (
-        <View
+        <Pressable
+            onPressOut={() => {
+                if (pressed) {
+                    setPressed(false)
+                }
+            }}
             onTouchStart={() => {
                 setStyle(true)
+                setPressed(true)
+                props.setScroll(false)
             }}
             onTouchEnd={() => {
                 setStyle(false)
-                props.nav.navigate("Tasks", { category: props.element })
+                if (pressed) {
+                    props.nav.navigate("Tasks", { category: props.element })
+                }
+                props.setScroll(true)
             }}
             style={{
                 display: 'flex',
@@ -49,15 +60,14 @@ const CategoryView = (props: { element: Category, nav: any, i: number }) => {
                 )}
                 color="white"
             />
-        </View >
+        </Pressable >
     )
 }
 
-export default function MovableMenu(props: { i: number, element: Category, nav: any }) {
+export default function MovableMenu(props: { i: number, element: Category, nav: any, setScroll: any }) {
     //@ts-ignore
     const { categoryContext, setCategories } = useContext(CatContext);
     const pan = useRef(new Animated.ValueXY()).current;
-
     /*
     useMemo(() => {
         pan.addListener(() => {
@@ -122,6 +132,7 @@ export default function MovableMenu(props: { i: number, element: Category, nav: 
                 i={props.i}
                 nav={props.nav}
                 element={props.element}
+                setScroll={props.setScroll}
             />
         </Animated.View >
     );

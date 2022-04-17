@@ -1,33 +1,27 @@
-import React, { useMemo, useState } from "react"
-import { View, Text, StyleSheet, SafeAreaView, Image } from "react-native"
+import React, { useEffect, useMemo, useState } from "react"
+import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from "react-native"
 import { Avatar, TextInput, Button } from 'react-native-paper';
 import store from "../storage/Store";
-import { Benefit } from "../types";
+import { Benefit, Task } from "../types";
 import { styles } from "../styles/styles";
 
-const Benefits = () => {
-    let benefits: Array<Benefit> = store.getState().benefits
-
-    return (
-        <View>
-            {benefits.map((e) => {
-                return (
-                    <Text>
-                        {e}
-                    </Text>
-                )
-            })}
-
-        </View>
-    )
+const randoColor = () => {
+    let bgColor = [
+        'red',
+        'blue',
+        'green',
+        'orange',
+    ]
+    return bgColor[Math.floor(Math.random() * bgColor.length)];
 }
 
 export default function NewTasks({ route, navigation }: any) {
     const { category } = route.params
+    let benefits: Array<Benefit> = store.getState().benefits
+    
     const [text, setText] = React.useState("");
-    
-    const [selectedBenefits, setBenefits] = useState(new Array())
-    
+    const [selectedBenefits, setSelectedBenefits] = useState(new Array(benefits.length).fill(false))
+
     const [error, setError] = React.useState(false)
 
     useMemo(() => {
@@ -65,7 +59,7 @@ export default function NewTasks({ route, navigation }: any) {
                     outlineColor="blue"
                     autoComplete={true}
                     error={error}
-                    placeholder="text Holly, fix relationship, etc...."
+                    placeholder="Buy item, Text John, Research topic...."
                     style={{
                         marginLeft: 24,
                         marginRight: 24,
@@ -78,18 +72,72 @@ export default function NewTasks({ route, navigation }: any) {
                     value={text}
                     onChangeText={(text) => { setText(text) }}
                 />
-                <Text style={{ marginTop: 45, color: 'black', fontSize: 17, marginLeft: 24 }}>
+                <Text style={{ marginTop: 30, color: 'black', fontSize: 17, marginLeft: 24, marginBottom: 10 }}>
                     Benefits
                 </Text>
-                <Benefits/>
 
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap', marginLeft: 10 }}>
+                    {benefits.map((e: Benefit, i: number) => {
+                        return (
+                            <View key={i} style={[{
+                                opacity: 0.7,
+                                backgroundColor: 'white',
+                                borderColor: (selectedBenefits[i]) ? ('black') : ('white'),
+                                borderWidth: 5,
+                                borderRadius: 30,
+                                marginTop: 10,
+                                marginBottom: 10,
+                                marginRight: 5,
+                                marginLeft: 5,
+                            }, styles.shadowProp]}
+                                onTouchEnd={() => {
+                                    let prevSelec = selectedBenefits
+                                    console.log(prevSelec[i])
+                                    prevSelec[i] = !prevSelec[i]
+                                    setSelectedBenefits([...prevSelec])
+                                }}
+                            >
+                                <Text style={{ fontSize: 20, color: 'black', padding: 15 }}>
+                                    {e.name}
+                                </Text>
+                            </View>
+                        )
+                    })}
+                </View >
                 <Button
                     icon="check"
                     mode="text"
                     style={{ marginTop: 24 }}
                     labelStyle={{ fontSize: 45, color: 'black' }}
                     onPress={() => {
+                        if(text === ''){
+                            setError(true)
+                        }
+                        else{
+                            let newTask: Task = {
+                                name: text,
+                                completion: false,
+                                benefits: selectedBenefits.map((e: boolean, i: number) => {
+                                    return {
+                                        e,
+                                        i
+                                    }
+                                }).filter((e: any)=> {
+                                    return e.e
+                                }).map((e: any) => {
+                                    return benefits[e.i]
+                                })
+                            }
 
+                            store.dispatch({
+                                type: 'addTask',
+                                payload: {
+                                    catergoryName: category.name,
+                                    task: newTask
+                                }
+                            })
+                            navigation.goBack()
+                        }
                     }}
                 >
                 </Button>

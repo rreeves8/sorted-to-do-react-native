@@ -2,10 +2,9 @@ import { StyleSheet } from "react-native"
 
 export const styles = StyleSheet.create({
     iconContainer: {
-        position: 'absolute',
         marginTop: 1,
-        left: '85%',
-        backgroundColor: '#F5F5F5'
+        backgroundColor: '#F5F5F5',
+        flex: 2
     },
     dateText: {
         color: 'white',
@@ -19,7 +18,7 @@ export const styles = StyleSheet.create({
         height: '100%'
     },
     title: {
-        marginTop: 10,
+        alignSelf: 'center',
         color: 'black',
         fontSize: 25,
         textAlign: 'center'
@@ -28,7 +27,7 @@ export const styles = StyleSheet.create({
         borderRadius: 25,
         backgroundColor: '#0c31b6',
         height: 150,
-        marginTop: 30,
+        marginTop: 10,
         marginLeft: 20,
         marginRight: 20,
         display: 'flex',

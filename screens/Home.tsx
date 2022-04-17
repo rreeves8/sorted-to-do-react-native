@@ -71,11 +71,13 @@ const DateDisplay = () => {
 export default function Home({ navigation }: any) {
     const [cateroies, setCateroies] = useState(store.getState().categories)
     const isFocused = useIsFocused()
+    const [isScrolling, setScrolling] = useState(true)
 
     useEffect(() => {
         //update on change
         setCateroies(store.getState().categories)
     }, [isFocused])
+
 
     return (
         <SafeAreaView style={styles.backGround}>
@@ -89,10 +91,13 @@ export default function Home({ navigation }: any) {
                         </Text>
                     </View>
                 ) : (
-                    <ScrollView>
+                    <ScrollView
+                        scrollEnabled={isScrolling}
+                    >
                         <CategoryProvider>
                             <Categories
                                 nav={navigation}
+                                setScroll= {setScrolling}
                             />
                         </CategoryProvider>
                     </ScrollView>

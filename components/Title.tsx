@@ -6,11 +6,15 @@ import { clearData } from '../storage/Persistent'
 
 export default function Title({ nav }: any) {
     return (
-        <View>
+        <View style ={{
+            display: 'flex',
+            flexDirection: 'row'
+        }}>
             <View style={{
-                position: 'absolute',
+                flex: 0,
                 marginTop: 1,
-                left: '2%',
+                marginLeft: 10,
+                alignSelf: 'center',
                 backgroundColor: '#F5F5F5'
             }}>
                 <Avatar.Icon
@@ -18,23 +22,23 @@ export default function Title({ nav }: any) {
                     size={50}
                     icon={({ size, color }) => (
                         <Image
-                            source={require('../assets/icons/trash.png')}
+                            source={require('../assets/icons/account.png')}
                             style={{ width: size, height: size, tintColor: color }}
                         />
                     )}
                     color="black"
                     onTouchEnd={() => {
-                        clearData()
+                        nav.navigate("Profile")
                     }}
                 />
             </View>
-            <Text style={styles.title}>
+            <Text style={[styles.title, { flex: 1}]}>
                 Sorted To Do List
             </Text>
-            <View style={styles.iconContainer}>
+            <View style={{ marginRight: 10 }}>
                 <Avatar.Icon
                     style={{ backgroundColor: '#F5F5F5' }}
-                    size={50}
+                    size={55}
                     icon='plus'
                     color="black"
                     onTouchEnd={() => {
