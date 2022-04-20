@@ -1,11 +1,15 @@
+import { ImageSourcePropType } from "react-native"
+
 type Benefit = {
     name: string
     ranking: number
+    color: string
 }
 
 type Task = {
     name: string
     completion: boolean
+    date?: Date
     benefits: Array<Benefit>
 }
 
@@ -19,9 +23,16 @@ type State = {
     benefits: Array<Benefit>
 }
 
+type TitleIcon = {
+    nav: () => void
+    icon: NodeRequire | string
+    isImage?: boolean
+}
+
 export {
     Task,
     Category,
     Benefit,
-    State
+    State, 
+    TitleIcon
 }

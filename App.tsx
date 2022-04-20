@@ -8,13 +8,14 @@ import Home from "./screens/Home";
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Tasks from './screens/Tasks';
-import NewTasks from './screens/NewTask';
+import TaskModifier from './screens/TaskModifier';
 import NewCategory from './screens/NewCategory'
 import { useAppState } from '@react-native-community/hooks'
 import Profile from './screens/Profile';
 import { LogInContext, LogInProvider } from './providers/LoginProvider';
 import { secureFetch } from './storage/Persistent';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import Settings from './screens/Settings';
 
 const Stack = createStackNavigator();
 
@@ -44,6 +45,7 @@ const Root = () => {
         if (currentAppState !== 'active') {
             let userState: State = store.getState()
             //storeData(userState)
+            console.log('saving')
         }
     }, [currentAppState])
 
@@ -57,9 +59,10 @@ const Root = () => {
                 <Stack.Navigator screenOptions={{ headerShown: false }} >
                     <Stack.Screen name='Home' component={Home} />
                     <Stack.Screen name='Tasks' component={Tasks} />
-                    <Stack.Screen name='NewTask' component={NewTasks} />
+                    <Stack.Screen name='TaskModifier' component={TaskModifier} />
                     <Stack.Screen name='NewCategory' component={NewCategory} />
                     <Stack.Screen name="Profile" component={Profile} />
+                    <Stack.Screen name="Settings" component={Settings} options={{gestureDirection: 'horizontal-inverted'}}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </>

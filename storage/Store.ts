@@ -7,9 +7,15 @@ type NewTask = {
     task: Task
 }
 
-type type = 'loadSaved' | "addCategory" | "addBenefit" | "addTask" | "saveState"
+type OldTask ={
+    catergoryName: string
+    newTask: Task
+    oldTask: Task
+}
 
-const reducer = (state: State, action: { type: type, payload: State | Array<Category> | Benefit | NewTask }) => {
+type type = 'loadSaved' | "addCategory" | "addBenefit" | "addTask" | "saveState" | "editTask"
+
+const reducer = (state: State, action: { type: type, payload: State | OldTask | Array<Category> | Benefit | NewTask }) => {
     switch (action.type) {
         case 'loadSaved':
             state = action.payload as State
@@ -25,8 +31,18 @@ const reducer = (state: State, action: { type: type, payload: State | Array<Cate
 
         case "addTask":
             let newTask = action.payload as NewTask
+            console.log(newTask)
             let i = state.categories.findIndex(e => e.name === newTask.catergoryName)
             state.categories[i].tasks.push(newTask.task)
+            console.log(state.categories[i].tasks)
+            return state
+
+        case "editTask": 
+            let editTask = action.payload as OldTask
+            console.log(editTask)
+            let i2 = state.categories.findIndex(e => e.name === editTask.catergoryName)
+            let j = state.categories[i2].tasks.findIndex(e => editTask.oldTask.name === e.name)
+            state.categories[i2].tasks[j] = editTask.newTask
             return state
 
         case 'saveState':

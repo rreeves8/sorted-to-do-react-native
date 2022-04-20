@@ -1,39 +1,35 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { State, Category, Benefit, Task } from '../types';
 import * as SecureStore from 'expo-secure-store';
+import { randomColor } from '../styles/styles'
 
 let initialBenfits = ['Daily Effect', 'Free', 'Priority', 'Earlier-Better', 'Interest', 'School Related', 'Work Related']
-let emptyCat = ['School', 'Work', 'Job']
+let emptyCat = ['Misc']
 
 const getData = async (): Promise<State> => {
     const jsonValue = await AsyncStorage.getItem('@tasks')
-    let tasks: Array<Task> = [{
-        name: "Call Sean",
-        benefits: [{
-            name: 'Daily Effect',
-            ranking: 1
-        }],
-        completion: false
-    }]
 
     return (jsonValue != null) ? (JSON.parse(jsonValue)) : ({
-        categories: emptyCat.map((e: string) => {
-            return ({
+        categories: emptyCat.map((e: string): Category => {
+            return {
                 name: e,
-                tasks: tasks
-            })
+                tasks: new Array<Task>()
+            }
         }),
         benefits: initialBenfits.map((name: string): Benefit => {
+            console.log(randomColor())
             return ({
                 name: name,
-                ranking: Math.floor(Math.random() * initialBenfits.length)
+                ranking: Math.floor(Math.random() * initialBenfits.length),
+                color: randomColor()
             })
         })
     });
 }
 
 const clearData = async () => {
-    AsyncStorage.clear()
+    await AsyncStorage.clear()
+    await SecureStore.deleteItemAsync('-')
 }
 
 const storeData = async (value: State) => {
