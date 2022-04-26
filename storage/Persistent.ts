@@ -1,27 +1,28 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { State, Category, Benefit, Task } from '../types';
 import * as SecureStore from 'expo-secure-store';
-import { randomColor } from '../styles/styles'
+import { RandomColor } from '../styles/styles'
 
-let initialBenfits = ['Daily Effect', 'Free', 'Priority', 'Earlier-Better', 'Interest', 'School Related', 'Work Related']
+let initialBenfits = ['Daily Effect', 'Priority', 'Earlier-Better', 'Interest', 'School Related', 'Work Related']
 let emptyCat = ['Misc']
 
 const getData = async (): Promise<State> => {
     const jsonValue = await AsyncStorage.getItem('@tasks')
+    let random = new RandomColor()
 
     return (jsonValue != null) ? (JSON.parse(jsonValue)) : ({
         categories: emptyCat.map((e: string): Category => {
             return {
                 name: e,
-                tasks: new Array<Task>()
+                tasks: new Array<Task>(),
+                color: random.getColor('dark')
             }
         }),
-        benefits: initialBenfits.map((name: string): Benefit => {
-            console.log(randomColor())
+        benefits: initialBenfits.map((name: string, i: number): Benefit => {
             return ({
                 name: name,
-                ranking: Math.floor(Math.random() * initialBenfits.length),
-                color: randomColor()
+                ranking: i + 1,
+                color: random.getColor('dark')
             })
         })
     });
@@ -41,18 +42,18 @@ const storeData = async (value: State) => {
     }
 }
 
-const secureStore = async (uuid: any) => {
-    await SecureStore.setItemAsync('-', uuid);
+const secureStore = async (item: 'uuid' | 'isFaceID', data: { uuid?: any, isFaceID?: boolean}) => {
+    await SecureStore.setItemAsync(item, (data.uuid) ? data.uuid : JSON.stringify(data.isFaceID))
 }
 
 const logOut = async () => {
     await SecureStore.deleteItemAsync('-')
 }
 
-const secureFetch = async () => {
-    let result = await SecureStore.getItemAsync('-');
+const secureFetch = async (item: 'uuid' | 'isFaceID'): Promise<string | boolean> => {
+    let result = await SecureStore.getItemAsync(item);
     if (result) {
-        return result
+        return (item === 'uuid') ? result : JSON.parse(result)
     } else {
         throw new Error()
     }

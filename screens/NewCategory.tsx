@@ -1,14 +1,15 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useContext, useEffect, useMemo } from "react"
 import { View, Text, StyleSheet, SafeAreaView, Image, GestureResponderEvent } from "react-native"
 import { Avatar, Button, } from 'react-native-paper';
 import { CategoryProvider } from "../providers/CategoryProvider";
 import store from "../storage/Store";
 import { Category, Task } from "../types";
-import { styles } from "../styles/styles";
 import Title from "../components/Title";
 import { TextInput } from "../components/TextInput";
+import { StyleContext } from "../providers/StyleProvider";
 
 export default function NewCategory({ navigation }: any) {
+    const { styles, getRandomColor } = useContext(StyleContext)
     const [text, setText] = React.useState("");
     const [error, setError] = React.useState(false)
 
@@ -48,7 +49,8 @@ export default function NewCategory({ navigation }: any) {
 
                         newCat.push({
                             name: text,
-                            tasks: new Array<Task>()
+                            tasks: new Array<Task>(),
+                            color: getRandomColor()
                         })
 
                         store.dispatch({

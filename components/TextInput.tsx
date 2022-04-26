@@ -1,6 +1,5 @@
 import { Avatar, TextInput as TextInputRn, Button, } from 'react-native-paper';
 import { Text, View } from 'react-native';
-import { styles } from '../styles/styles';
 
 export function TextInput({ title, text, setText, error }: { title: string, text: string, setText: any, error: boolean }) {
     return (

@@ -1,7 +1,7 @@
-import React from "react"
+import React, { useContext, useState } from "react"
 import { View, Text, Image, ImageSourcePropType, ImageURISource } from "react-native"
 import { Avatar } from "react-native-paper"
-import { styles } from "../styles/styles"
+import { StyleContext } from "../providers/StyleProvider"
 import { TitleIcon } from '../types'
 
 /*
@@ -75,7 +75,9 @@ const getIcons = (nav: TitleIcon) => {
 }
 
 
-export default function Title(props: { title: string, LeftNav: TitleIcon, RightNav?: TitleIcon }) {
+export default function Title(props: { title: string, LeftNav?: TitleIcon, RightNav?: TitleIcon }) {
+    const { styles } = useContext(StyleContext)
+
     return (
         <View style={{
             display: 'flex',
@@ -85,20 +87,31 @@ export default function Title(props: { title: string, LeftNav: TitleIcon, RightN
                 marginLeft: 10,
                 backgroundColor: '#F5F5F5'
             }}>
-                <Avatar.Icon
-                    style={{ backgroundColor: '#F5F5F5' }}
-                    size={50}
-                    icon={getIcons(props.LeftNav)}
-                    color="black"
-                    onTouchEnd={() => {
-                        props.LeftNav.nav()
-                    }}
-                />
+                {(props.LeftNav) ? (
+                    <Avatar.Icon
+                        style={{ backgroundColor: '#F5F5F5' }}
+                        size={50}
+                        icon={getIcons(props.LeftNav!)}
+                        color="black"
+                        onTouchEnd={() => {
+                            props.LeftNav?.nav()
+                        }}
+                    />
+                ) : (
+                    <View
+                        style={{ backgroundColor: '#F5F5F5', height: 50, width: 50 }}
+                    />
+                )}
             </View>
-            <Text style={[styles.title, { flex: 1 }]}>
+            <Text style={[{
+                fontFamily: 'SF-Pro',
+                alignSelf: 'center',
+                fontSize: 25,
+                textAlign: 'center'
+            }, styles.title, { flex: 1 }]}>
                 {props.title}
             </Text>
-            <View style={{ marginRight: 10 }}>
+            <View style={{ marginRight: 10, backgroundColor: '#F5F5F5' }}>
                 {(props.RightNav) ? (
                     <Avatar.Icon
                         style={{ backgroundColor: '#F5F5F5' }}

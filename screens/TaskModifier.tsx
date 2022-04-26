@@ -1,18 +1,17 @@
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import { View, Text, SafeAreaView, Image, Switch } from "react-native";
 import { Avatar, Button } from "react-native-paper";
 import store from "../storage/Store";
-import { styles } from "../styles/styles";
 import { Benefit, Task } from "../types";
 import { TextInput } from "../components/TextInput";
 import Title from "../components/Title";
-import { LinearGradient } from 'expo-linear-gradient';
-import { randomColor } from '../styles/styles'
+import { StyleContext } from "../providers/StyleProvider";
 
 export default function EditTask({ route, navigation }: any) {
     const { category, task, type } = route.params
-
+    const { styles, getRandomColor } = useContext(StyleContext)
+    
     let benefits: Array<Benefit> = store.getState().benefits
 
     const [text, setText] = React.useState(
@@ -149,7 +148,8 @@ export default function EditTask({ route, navigation }: any) {
                                 return !e.e
                             }).map((e: any) => {
                                 return benefits[e.i]
-                            })
+                            }),
+                            color: getRandomColor()
                         }
 
                         if (isEnabled) {

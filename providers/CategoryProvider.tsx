@@ -11,7 +11,7 @@ export const CategoryProvider = (props: { children: React.ReactNode }) => {
             type: 'addCategory',
             payload: categoryContext
         })
-    }, categoryContext)
+    }, [categoryContext])
 
     return (
         <CatContext.Provider value={{ categoryContext, setCategories }}>

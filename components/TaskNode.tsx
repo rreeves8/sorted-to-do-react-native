@@ -1,15 +1,16 @@
-import React from "react";
-import { TouchableOpacity, Text, Image } from "react-native";
+import React, { useContext, useState } from "react";
+import { TouchableOpacity, Text, Image, View } from "react-native";
 import { Avatar } from "react-native-paper";
-import { styles } from "../styles/styles";
+import { StyleContext } from "../providers/StyleProvider";
 import { Category, Task } from "../types";
+import Checkbox from 'expo-checkbox';
 
 export default function TaskNode(props: { task: Task, nav: any, category: Category }) {
+    const { styles, getRandomColor } = useContext(StyleContext)
+    const [isChecked, setChecked] = useState(false);
+    
     return (
         <TouchableOpacity
-            onPress={() => {
-                props.nav.navigate('EditTask', { task: props.task, category: props.category})
-            }}
             style={[{
                 width: '90%',
                 display: "flex",
@@ -23,21 +24,14 @@ export default function TaskNode(props: { task: Task, nav: any, category: Catego
                 alignItems: 'center'
             }, styles.shadowProp,]}
         >
-            <Avatar.Icon
-                style={{ backgroundColor: 'white', marginLeft: '2%' }}
-                size={60}
-                icon={({ size, color }) => (
-                    <Image
-                        source={require('../assets/icons/x_circle.png')}
-                        style={{
-                            width: size,
-                            height: size,
-                            tintColor: 'black',
-                        }}
-                    />
-                )}
-                color="white"
-            />
+            <View style={{ margin: 8}}>
+                <Checkbox
+                    style={{ marginLeft: 12, marginRight: 12, height: 25, width: 25, borderColor: getRandomColor('dark') }}
+                    value={isChecked}
+                    onValueChange={setChecked}
+                    color={isChecked ? '#4630EB' : undefined}
+                />
+            </View>
             <Text
                 style={{
                     color: 'black',
@@ -46,8 +40,11 @@ export default function TaskNode(props: { task: Task, nav: any, category: Catego
                 }}
             >{props.task.name}</Text>
             <Avatar.Icon
-                style={{ backgroundColor: 'white', marginLeft: '2%' }}
-                size={60}
+                style={{ backgroundColor: 'white', marginRight: '3%' }}
+                onTouchEnd={() => {
+                    props.nav.navigate('EditTask', { task: props.task, category: props.category })
+                }}
+                size={50}
                 icon={({ size, color }) => (
                     <Image
                         source={require('../assets/icons/edit.png')}

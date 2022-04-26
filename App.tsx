@@ -1,6 +1,6 @@
-import { StyleSheet, Text, StatusBar } from 'react-native';
+import { BackHandler, Text, StatusBar, Appearance } from 'react-native';
 import AppLoading from 'expo-app-loading';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import store from './storage/Store'
 import { getData, storeData } from './storage/Persistent';
 import { Category, State } from './types';
@@ -16,10 +16,21 @@ import { LogInContext, LogInProvider } from './providers/LoginProvider';
 import { secureFetch } from './storage/Persistent';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import Settings from './screens/Settings';
+import NewBenefit from './screens/NewBenefit';
+import { BenefitsProvider } from './providers/BenefitsProvider'
+import { StyleProvider } from './providers/StyleProvider';
+import * as Font from 'expo-font';
+import {
+    hasHardwareAsync,
+    isEnrolledAsync,
+    authenticateAsync
+} from 'expo-local-authentication';
+import { ActivityProvider } from './providers/ActivityProvider';
 
 const Stack = createStackNavigator();
 
-const loadData = async (setLoggedIn: any) => {
+const loadData = async () => {
+    console.log("loadData")
     let savedState: State = await getData()
 
     store.dispatch({
@@ -27,10 +38,32 @@ const loadData = async (setLoggedIn: any) => {
         payload: savedState
     })
 
+    console.log("done data")
+}
+
+const isFaceID = async () => {
     try {
-        let uuid = await secureFetch()
+        let isFaceID = await secureFetch('isFaceID') as boolean
+
+        if (isFaceID) {
+            const result = await authenticateAsync()
+
+            if (!result.success) {
+                BackHandler.exitApp()
+            }
+        }
+    }
+
+    catch {
+        throw new Error()
+    }
+}
+
+const loadLogIn = async (setLoggedIn: any) => {
+    console.log("loadLogin")
+    try {
+        let uuid = await secureFetch('uuid') as string
         let response = await AppleAuthentication.getCredentialStateAsync(uuid)
-        console.log(response)
         setLoggedIn((response === 1) ? true : false)
     }
     catch {
@@ -49,51 +82,76 @@ const Root = () => {
         }
     }, [currentAppState])
 
+    const getTheme = (): 'light' | 'dark' => {
+        const theme = Appearance.getColorScheme()
+
+        if (theme === null) {
+            return 'light'
+        }
+        else {
+            return theme!
+        }
+    }
+
     return (
-        <>
-            <StatusBar
-                animated={true}
-                backgroundColor="#61dafb"
-                barStyle='dark-content' />
-            <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }} >
-                    <Stack.Screen name='Home' component={Home} />
-                    <Stack.Screen name='Tasks' component={Tasks} />
-                    <Stack.Screen name='TaskModifier' component={TaskModifier} />
-                    <Stack.Screen name='NewCategory' component={NewCategory} />
-                    <Stack.Screen name="Profile" component={Profile} />
-                    <Stack.Screen name="Settings" component={Settings} options={{gestureDirection: 'horizontal-inverted'}}/>
-                </Stack.Navigator>
-            </NavigationContainer>
-        </>
+        <StyleProvider theme={getTheme()}>
+            <BenefitsProvider>
+                <ActivityProvider>
+                    <StatusBar
+                        animated={true}
+                        backgroundColor="#61dafb"
+                        barStyle='dark-content' />
+                    <NavigationContainer>
+                        <Stack.Navigator screenOptions={{ headerShown: false }} >
+                            <Stack.Screen name='Home' component={Home} />
+                            <Stack.Screen name='NewBenefit' component={NewBenefit} />
+                            <Stack.Screen name='Tasks' component={Tasks} />
+                            <Stack.Screen name='TaskModifier' component={TaskModifier} />
+                            <Stack.Screen name='NewCategory' component={NewCategory} />
+                            <Stack.Screen name="Profile" component={Profile} />
+                            <Stack.Screen name="Settings" component={Settings} options={{ gestureDirection: 'horizontal-inverted' }} />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </ActivityProvider>
+            </BenefitsProvider>
+        </StyleProvider>
+
     )
 }
 
-const LogInExchange = () => {
+export default function App() {
     const [loaded, setLoaded] = useState(false)
-    //@ts-ignore
-    const { setLoggedIn } = useContext(LogInContext);
+    const [isLoggedIn, setLoggedIn] = useState<boolean>(false)
 
     return (
         <>
             {loaded ? (
-                <Root />
+                <LogInProvider
+                    isLoggedIn={isLoggedIn}
+                    setLoggedIn={setLoggedIn}
+                >
+                    <Root />
+                </LogInProvider>
             ) : (
                 <AppLoading
-                    startAsync={async () => await loadData(setLoggedIn)}
-                    onFinish={() => setLoaded(true)}
-                    onError={console.warn}
+                    startAsync={async () => {
+                        await Promise.all([
+                            loadData(),
+                            loadLogIn(setLoggedIn),
+                            Font.loadAsync({
+                                'SF-Pro': require('./assets/fonts/SF-Pro.ttf')
+                            }),
+                        ])
+                    }}
+                    onFinish={() => {
+                        setLoaded(true)
+                        console.log("done")
+                    }}
+                    onError={(error) => console.log(error)}
                 />
-            )}
+            )
+            }
         </>
-    );
-}
-
-export default function App() {
-    return (
-        <LogInProvider>
-            <LogInExchange />
-        </LogInProvider>
     )
 }
 

@@ -23,10 +23,9 @@ const SignInWithApple = ({ nav }: any) => {
                             AppleAuthentication.AppleAuthenticationScope.EMAIL,
                         ],
                     });
-                    secureStore(credential.user)
+                    secureStore('uuid', { uuid: credential.user })
                     setLoggedIn(true)
                     nav.navigate("Home")
-                    // signed in
                 } catch (e: any) {
                     if (e.code === 'ERR_CANCELED') {
                         // handle that the user canceled the sign-in flow
