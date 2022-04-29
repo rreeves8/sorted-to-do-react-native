@@ -50,13 +50,9 @@ export class RandomColor {
     constructor() {
         var keys = Object.keys(iosColors);
         
-        this.Colors = keys.map((e: any) => {
-            if (e !== 'System') {
-                //@ts-ignore
-                return iosColors[e];
-            }
+        this.Colors = keys.filter((e: any) => e !== 'System').map((e: any) => {
+            return iosColors[e]
         })
-
     }
 
     getColor = (mode: 'light' | 'dark') => {

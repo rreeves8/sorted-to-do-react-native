@@ -11,10 +11,9 @@ export const TaskProvider = (props: { children: React.ReactNode, category: Categ
         return categories[index].tasks
     })());
 
-
     return (
         <TaskContext.Provider value={{ tasks, setTasks }}>
             {props.children}
         </TaskContext.Provider>
     );
-};
+}

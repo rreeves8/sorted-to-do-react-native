@@ -14,6 +14,8 @@ import { StyleContext } from "../providers/StyleProvider";
 import type { PickerInstance, PickerItem } from 'react-native-woodpicker'
 import { Picker } from 'react-native-woodpicker'
 import { iosColors } from "../styles/styles";
+import SortableTasks from "../components/SortableTasks";
+import { BenefitsContext } from "../providers/BenefitsProvider";
 
 const fetchTime = (dateObj: Date) => {
     return ((dateObj.getHours() > 12) ? (dateObj.getHours() - 12) : (dateObj.getHours())) +
@@ -90,26 +92,14 @@ export default function Home({ navigation }: any) {
     const isFocused = useIsFocused()
     const [activationDistance, setActivationDistance] = useState(10);
     const [dropDown, setDropDown] = useState(false)
-    const [pickedData, setPickedData] = useState<PickerItem>();
-    const pickerRef = React.useRef<PickerInstance | null>(null);
+    const { benefits } = useContext(BenefitsContext);
 
     const { styles } = useContext(StyleContext)
-
-    const data: Array<PickerItem> = [
-        { label: "Due Date", value: 1 },
-        { label: "Benefits Importance Sum", value: 2 },
-        { label: "Benefits Quantity", value: 3 },
-        { label: "Benefits Quantity and Sum", value: 4 }
-    ];
-
-    const toggleModal = () => {
-        setDropDown(!dropDown);
-    }
 
     useEffect(() => {
         //update on change
         setCateroies(store.getState().categories)
-    }, [isFocused])
+    }, [isFocused, benefits])
 
     return (
         <View
@@ -126,7 +116,6 @@ export default function Home({ navigation }: any) {
                     LeftNav={{
                         nav: () => navigation.navigate('Settings'),
                         icon: require('../assets/icons/settings.png'),
-                        isImage: true
                     }}
                     RightNav={{
                         nav: () => navigation.navigate('Profile'),
@@ -143,107 +132,27 @@ export default function Home({ navigation }: any) {
                     </Text>
                 </View>
             ) : (
-                <Swiper style={{ height: '100%' }} index={1} loop={false}>
-                    <View>
-                        <Benefits
-                            activationDistance={activationDistance}
-                            nav={navigation}
-                        />
-                    </View>
-                    <View>
-                        <CategoryProvider>
+                <CategoryProvider>
+                    <Swiper style={{ height: '100%' }} index={1} loop={false}>
+                        <View>
+                            <Benefits
+                                activationDistance={activationDistance}
+                                nav={navigation}
+                            />
+                        </View>
+                        <View>
                             <Categories
                                 activationDistance={activationDistance}
                                 nav={navigation}
                             />
-                        </CategoryProvider>
-                    </View>
-                    <View style={{ display: 'flex', flexDirection: 'column' }}>
-                        <View style={{ flex: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ marginLeft: 20, fontSize: 20 }}> Sorted Tasks </Text>
-                            <View style={{ marginRight: 20, alignSelf: 'flex-end', display: 'flex', flexDirection: 'column', flexWrap: "wrap-reverse" }}>
-                                <Picker
-                                    InputComponent={() => (
-                                        <Avatar.Icon
-                                            style={{
-                                                backgroundColor: 'transparent',
-                                                position: 'relative',
-                                                top: -15,
-                                                transform: [{ rotateY: '180deg' }],
-                                            }}
-                                            size={55}
-                                            icon={require('../assets/icons/sort_change.png')}
-                                            color="black"
-                                            onTouchEnd={() => {
-                                                pickerRef.current?.open()
-                                            }}
-                                        />
-                                    )}
-                                    DoneBarComponent={() => (
-                                        <View style={{
-                                            borderTopColor: iosColors.System.gray.dark,
-                                            borderTopWidth: 0.5,
-                                            borderBottomColor: iosColors.System.gray.dark,
-                                            borderBottomWidth: 0.5,
-                                            backgroundColor: iosColors.System.gray6.light
-                                        }}>
-                                            <Text style={{ alignSelf: 'flex-end', fontFamily: 'SF-Pro', fontSize: 20, margin: 15 }}>
-                                                Done
-                                            </Text>
-                                        </View>
-                                    )}
-                                    iosCustomProps={{
-                                        style: {
-                                            backgroundColor: iosColors.System.gray3.light,
-                                            fontFamily: 'SF-Pro'
-                                        }
-                                    }}
-                                    itemColor={iosColors.System.gray6.dark}
-                                    textInputStyle={{ color: iosColors.Blue.light, fontFamily: 'SF-Pro' }}
-                                    ref={pickerRef}
-                                    items={data}
-                                    onItemChange={setPickedData}
-                                    isNullable={true}
-
-                                />
-                            </View>
                         </View>
-                        <ScrollView stickyHeaderIndices={[0]} style={{ height: '100%' }}>
-                            {(() => {
-                                let isEmpty = true
-
-                                let categoriesJSX = () => {
-                                    return (
-                                        cateroies.map((e: Category, i: number) => {
-                                            if (e.tasks.length !== 0) {
-                                                isEmpty = false
-                                            }
-                                            return () => {
-                                                <View
-                                                    key={i}
-                                                >
-                                                    {e.tasks.map((t: Task, j: number) => {
-                                                        return <TaskNode
-                                                            key={j}
-                                                            category={e}
-                                                            task={t}
-                                                            nav={navigation}
-                                                        />
-                                                    })}
-                                                </View>
-                                            }
-                                        })
-
-                                    )
-                                }
-
-                                return (isEmpty) ? <Text style ={{
-                                    alignSelf: 'center'
-                                }}>No Tasks, add a task using the cateroies section</Text> : categoriesJSX
-                            })()}
-                        </ScrollView>
-                    </View>
-                </Swiper>
+                        <View>
+                            <SortableTasks
+                                navigation={navigation}
+                            />
+                        </View>
+                    </Swiper>
+                </CategoryProvider>
             )}
         </View >
     )

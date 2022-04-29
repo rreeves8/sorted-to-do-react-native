@@ -1,4 +1,4 @@
-import { ImageSourcePropType } from "react-native"
+import { ImageSourcePropType, ViewStyle } from "react-native"
 
 type Benefit = {
     name: string
@@ -28,7 +28,7 @@ type State = {
 type TitleIcon = {
     nav: () => void
     icon: NodeRequire | string
-    isImage?: boolean
+    style?: ViewStyle 
 }
 
 export {

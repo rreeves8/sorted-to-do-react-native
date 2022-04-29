@@ -64,8 +64,7 @@ export default function EditTask({ route, navigation }: any) {
             <Title
                 LeftNav={{
                     nav: () => navigation.goBack(),
-                    icon: require('../assets/icons/arrow-left.png'),
-                    isImage: true
+                    icon: require('../assets/icons/arrow-left.png')
                 }}
                 title={type}
             />
@@ -145,7 +144,7 @@ export default function EditTask({ route, navigation }: any) {
                                     i
                                 }
                             }).filter((e: any) => {
-                                return !e.e
+                                return e.e
                             }).map((e: any) => {
                                 return benefits[e.i]
                             }),

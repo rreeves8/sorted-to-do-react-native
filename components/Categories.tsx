@@ -2,25 +2,23 @@ import { useIsFocused } from "@react-navigation/native"
 import React, { useState, useEffect, useContext, useMemo } from "react"
 import { Pressable, View, Text, Image, TouchableOpacity, Alert } from "react-native"
 import { Avatar } from "react-native-paper"
-import { CatContext } from "../providers/CategoryProvider"
+import { CategoryContext } from "../providers/CategoryProvider"
 import { MenuProvider } from "../providers/MenuProvider"
 import { Category } from "../types"
 import DraggableFlatList, {
     ScaleDecorator,
     RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { black } from "react-native-paper/lib/typescript/styles/colors"
 import { StyleContext } from "../providers/StyleProvider"
 
 function CategoriesList(props: { nav: any, activationDistance: any }) {
-    //@ts-ignore
-    const { categoryContext, setCategories } = useContext(CatContext);
+    const { categories, setCategories } = useContext(CategoryContext);
     const { styles } = useContext(StyleContext)
     const [dragging, setDragging] = useState(false)
     const [timeOutHook, setTimeOutHook] = useState<NodeJS.Timeout | null>(null)
 
     const deleteElement = (item: Category) => {
-        let prevCategory: Array<Category> = categoryContext
+        let prevCategory: Array<Category> = categories
         let newArr = prevCategory.filter((b: Category) => b.name !== item.name)
         setCategories([...newArr])
     }
@@ -77,7 +75,7 @@ function CategoriesList(props: { nav: any, activationDistance: any }) {
                     <Text
                         style={{
                             color: 'black',
-                            fontSize: 25,
+                            fontSize: 22,
                             flex: 1,
                             alignSelf: 'center',
                             marginLeft: '3%'
@@ -155,14 +153,13 @@ function CategoriesList(props: { nav: any, activationDistance: any }) {
             activationDistance={props.activationDistance}
             nestedScrollEnabled={true}
             containerStyle={{ width: '100%' }}
-            data={categoryContext}
+            data={categories}
             onDragEnd={({ data }) => setCategories(data)}
             keyExtractor={(item) => item.name}
             renderItem={RenderItem}
         />
     )
 }
-
 
 export default function Categories({ nav, activationDistance }: any) {
     return (

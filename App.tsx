@@ -77,7 +77,7 @@ const Root = () => {
     useMemo(() => {
         if (currentAppState !== 'active') {
             let userState: State = store.getState()
-            //storeData(userState)
+            storeData(userState)
             console.log('saving')
         }
     }, [currentAppState])
@@ -135,13 +135,12 @@ export default function App() {
             ) : (
                 <AppLoading
                     startAsync={async () => {
-                        await Promise.all([
-                            loadData(),
-                            loadLogIn(setLoggedIn),
-                            Font.loadAsync({
-                                'SF-Pro': require('./assets/fonts/SF-Pro.ttf')
-                            }),
-                        ])
+                        //promise.all causes error
+                        await loadData()
+                        await loadLogIn(setLoggedIn)
+                        await Font.loadAsync({
+                            'SF-Pro': require('./assets/fonts/SF-Pro.ttf')
+                        })
                     }}
                     onFinish={() => {
                         setLoaded(true)
@@ -149,8 +148,7 @@ export default function App() {
                     }}
                     onError={(error) => console.log(error)}
                 />
-            )
-            }
+            )}
         </>
     )
 }

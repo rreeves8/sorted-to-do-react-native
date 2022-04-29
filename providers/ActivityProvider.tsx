@@ -1,6 +1,7 @@
+import { mdiFlashRedEye } from '@mdi/js';
 import { BlurView } from 'expo-blur';
 import React, { useState, createContext, useEffect, useMemo } from 'react'
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Alert } from 'react-native';
 
 type LoadingContextADT = {
     isloading: boolean,
@@ -10,16 +11,21 @@ type LoadingContextADT = {
 export const LoadingContext = React.createContext<LoadingContextADT>({} as LoadingContextADT)
 
 export const ActivityProvider = (props: { children: React.ReactNode }) => {
-    const [isloading, setLoading] = useState(true)
+    const [isloading, setLoading] = useState(false)
 
     return (
         <LoadingContext.Provider value={{ isloading, setLoading }}>
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#00ff00" />
+                <ActivityIndicator animating={isloading} size="large" color="#00ff00" />
             </View>
-            <BlurView intensity={100} style={styles.blurContainer}>
-                {props.children}
-            </BlurView>
+            {isloading ? (
+                <BlurView intensity={0}>
+                    {props.children}
+                </BlurView>
+            ) : (
+                props.children
+            )}
+
 
         </LoadingContext.Provider>
     )
@@ -31,6 +37,5 @@ const styles = StyleSheet.create({
         left: '50%',
         top: '50%',
         zIndex: 1
-    },
-
+    }
 })

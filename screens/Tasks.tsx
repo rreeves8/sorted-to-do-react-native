@@ -59,8 +59,7 @@ export default function Tasks({ route, navigation }: any) {
                     title={category.name + " Tasks"}
                     LeftNav={{
                         nav: () => navigation.goBack(),
-                        icon: require('../assets/icons/arrow-left.png'),
-                        isImage: true
+                        icon: require('../assets/icons/arrow-left.png')
                     }}
                     RightNav={{
                         nav: () => navigation.navigate("TaskModifier", { category, type: 'New Task' }),

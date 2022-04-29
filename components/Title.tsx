@@ -64,7 +64,7 @@ const oldSomething = () => {
 */
 
 const getIcons = (nav: TitleIcon) => {
-    return (nav.isImage) ? (
+    return (typeof nav.icon !== 'string' ) ? (
         ({ size, color }: any) => (
             <Image
                 source={nav.icon as ImageURISource}
@@ -114,7 +114,7 @@ export default function Title(props: { title: string, LeftNav?: TitleIcon, Right
             <View style={{ marginRight: 10, backgroundColor: '#F5F5F5' }}>
                 {(props.RightNav) ? (
                     <Avatar.Icon
-                        style={{ backgroundColor: '#F5F5F5' }}
+                        style={[{ backgroundColor: '#F5F5F5' }, (props.RightNav.style) ? (props.RightNav.style):({ })]}
                         size={55}
                         icon={getIcons(props.RightNav)}
                         color="black"

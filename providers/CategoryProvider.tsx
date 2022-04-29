@@ -1,21 +1,27 @@
 import React, { useState, createContext, useEffect, useMemo } from 'react'
 import store from '../storage/Store';
+import { Category } from '../types';
 
-export const CatContext = createContext({});
+type CatContextADT = {
+    categories: Array<Category>
+    setCategories: (e: Array<Category>) => void
+}
+
+export const CategoryContext = React.createContext<CatContextADT>({} as CatContextADT)
 
 export const CategoryProvider = (props: { children: React.ReactNode }) => {
-    const [categoryContext, setCategories] = useState(store.getState().categories);
+    const [categories, setCategories] = useState(store.getState().categories);
 
     useMemo(()=> {
         store.dispatch({
             type: 'addCategory',
-            payload: categoryContext
+            payload: categories
         })
-    }, [categoryContext])
+    }, [categories])
 
     return (
-        <CatContext.Provider value={{ categoryContext, setCategories }}>
+        <CategoryContext.Provider value={{ categories, setCategories }}>
             {props.children}
-        </CatContext.Provider>
+        </CategoryContext.Provider>
     );
 };

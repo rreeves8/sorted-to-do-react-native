@@ -63,11 +63,11 @@ const BenefitsList = (props: { activationDistance: any }) => {
                     <Text
                         style={{
                             color: 'black',
-                            fontSize: 25,
+                            fontSize: 22,
                             flex: 1,
                             alignSelf: 'center',
-                            marginLeft: '3%'
-                            ,fontFamily: 'SF-Pro'
+                            marginLeft: '3%',
+                            fontFamily: 'SF-Pro'
                         }}
                     >{item.name}</Text>
                     <Text
