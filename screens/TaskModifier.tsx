@@ -9,105 +9,104 @@ import Title from "../components/Title";
 import { StyleContext } from "../providers/StyleProvider";
 
 export default function EditTask({ route, navigation }: any) {
-    const { category, task, type } = route.params
-    const { styles, getRandomColor } = useContext(StyleContext)
-    
-    let benefits: Array<Benefit> = store.getState().benefits
-
-    const [text, setText] = React.useState(
-        type === 'Edit Task' ? task.name : ''
-    )
+    const { category, task, type } = route.params;
+    const { styles, getRandomColor } = useContext(StyleContext);
+    let benefits: Array<Benefit> = store.getState().benefits;
+    const [text, setText] = React.useState(type === "Edit Task" ? task.name : "");
 
     const [selectedBenefits, setSelectedBenefits] = useState(
-        (type === 'Edit Task') ? (
-            benefits.map((e: Benefit, i: number) => {
-                if (task.benefits.findIndex((t: any) => t.name === e.name)! === -1) {
-                    return true
-                }
-                else {
-                    return false
-                }
-            })
-        ) : (
-            new Array(benefits.length).fill(false)
-        )
-    )
+        type === "Edit Task"
+            ? benefits.map((e: Benefit, i: number) => {
+                  if (task.benefits.findIndex((t: any) => t.name === e.name)! === -1) {
+                      return true;
+                  } else {
+                      return false;
+                  }
+              })
+            : new Array(benefits.length).fill(false)
+    );
 
-    const [error, setError] = React.useState(false)
-
-    const [isEnabled, setIsEnabled] = useState(
-        (type === 'Edit Task') ? (
-            (task.date) ? true : false
-        ) : (
-            false
-        )
-    )
-
-    const [date, setDate] = useState(
-        (type === 'Edit Task') ? (
-            task.date
-        ) : (
-            new Date()
-        )
-    )
-
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const [error, setError] = React.useState(false);
+    const [isEnabled, setIsEnabled] = useState(type === "Edit Task" ? (task.date ? true : false) : false);
+    const [date, setDate] = useState(type === "Edit Task" ? task.date : new Date());
+    const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
     useMemo(() => {
         if (error) {
-            setTimeout(() => setError(false), 3000)
+            setTimeout(() => setError(false), 3000);
         }
-    }, [error])
+    }, [error]);
 
     return (
         <SafeAreaView style={styles.backGround}>
             <Title
                 LeftNav={{
                     nav: () => navigation.goBack(),
-                    icon: require('../assets/icons/arrow-left.png')
+                    icon: require("../assets/icons/arrow-left.png"),
                 }}
                 title={type}
             />
-            <TextInput
-                text={text}
-                setText={setText}
-                title="Name Of Task"
-                error={error}
-            />
-            <Text style={{ marginTop: 15, color: 'black', fontSize: 25, marginLeft: 24, marginBottom: 4 }}>
+            <TextInput text={text} setText={setText} title="Name Of Task" error={error} />
+            <Text
+                style={{
+                    marginTop: 15,
+                    color: "black",
+                    fontSize: 25,
+                    marginLeft: 24,
+                    marginBottom: 4,
+                }}
+            >
                 Benefits
             </Text>
 
-            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap', marginLeft: 10 }}>
+            <View
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    flexWrap: "wrap",
+                    marginLeft: 10,
+                }}
+            >
                 {benefits.map((e: Benefit, i: number) => {
                     return (
                         <View
                             key={i}
-                            style={[{
-                                backgroundColor: '#F5F5F5',
-                                borderColor: selectedBenefits[i] ? 'black' : '#F5F5F5',
-                                borderWidth: 5,
-                                borderRadius: 30,
-                                marginTop: 10,
-                                marginBottom: 10,
-                                marginRight: 5,
-                                marginLeft: 5,
-                                alignContent: 'center'
-                            }, styles.shadowProp]}
+                            style={[
+                                {
+                                    backgroundColor: "#F5F5F5",
+                                    borderColor: selectedBenefits[i] ? "black" : "#F5F5F5",
+                                    borderWidth: 5,
+                                    borderRadius: 30,
+                                    marginTop: 10,
+                                    marginBottom: 10,
+                                    marginRight: 5,
+                                    marginLeft: 5,
+                                    alignContent: "center",
+                                },
+                                styles.shadowProp,
+                            ]}
                             onTouchEnd={() => {
-                                let prevSelec = selectedBenefits
-                                console.log(prevSelec[i])
-                                prevSelec[i] = !prevSelec[i]
-                                setSelectedBenefits([...prevSelec])
+                                let prevSelec = selectedBenefits;
+                                console.log(prevSelec[i]);
+                                prevSelec[i] = !prevSelec[i];
+                                setSelectedBenefits([...prevSelec]);
                             }}
                         >
-                            <Text style={{ fontSize: 20, color: 'black', padding: 15 }}>
+                            <Text
+                                style={{
+                                    fontSize: 20,
+                                    color: "black",
+                                    padding: 15,
+                                }}
+                            >
                                 {e.name}
                             </Text>
                         </View>
-                    )
+                    );
                 })}
-            </View >
+            </View>
+            {/*
             <View style={{ display: 'flex', flexDirection: 'row', marginTop: 30, marginLeft: 5 }}>
                 <Text style={{ color: 'black', fontSize: 25, marginLeft: 24, marginRight: 8, alignSelf: 'center' }}>
                     Due Date:
@@ -122,67 +121,70 @@ export default function EditTask({ route, navigation }: any) {
                     />
                 </View>
             </View>
+
             {(isEnabled) ? (
                 <RNDateTimePicker onChange={(event: any) => setDate(event)} value={date} display="spinner" mode="datetime" />
             ) : (<></>)}
+
+            */}
             <Button
                 icon="check"
                 mode="text"
                 style={{ marginTop: 24 }}
-                labelStyle={{ fontSize: 45, color: 'black' }}
+                labelStyle={{ fontSize: 45, color: "black" }}
                 onPress={() => {
-                    if (text === '') {
-                        setError(true)
-                    }
-                    else {
+                    if (text === "") {
+                        setError(true);
+                    } else {
                         let newTask: Task = {
                             name: text,
                             completion: false,
-                            benefits: selectedBenefits.map((e: boolean, i: number) => {
-                                return {
-                                    e,
-                                    i
-                                }
-                            }).filter((e: any) => {
-                                return e.e
-                            }).map((e: any) => {
-                                return benefits[e.i]
-                            }),
-                            color: getRandomColor()
-                        }
+                            benefits: selectedBenefits
+                                .map((e: boolean, i: number) => {
+                                    return {
+                                        e,
+                                        i,
+                                    };
+                                })
+                                .filter((e: any) => {
+                                    return e.e;
+                                })
+                                .map((e: any) => {
+                                    return benefits[e.i];
+                                }),
+                            color: getRandomColor(),
+                        };
 
                         if (isEnabled) {
                             newTask = {
                                 ...newTask,
-                                date: date
-                            }
+                                date: date,
+                            };
                         }
 
-                        if (type === 'Edit Task') {
+                        if (type === "Edit Task") {
                             store.dispatch({
-                                type: 'editTask',
+                                type: "editTask",
                                 payload: {
                                     catergoryName: category.name,
                                     newTask: newTask,
-                                    oldTask: task
-                                }
-                            })
-                        }
-                        else {
+                                    oldTask: task,
+                                },
+                            });
+                        } else {
                             store.dispatch({
-                                type: 'addTask',
+                                type: "addTask",
                                 payload: {
                                     catergoryName: category.name,
-                                    task: newTask
-                                }
-                            })
+                                    task: newTask,
+                                },
+                            });
                         }
 
-                        navigation.goBack()
+                        navigation.goBack();
                     }
                 }}
-            >
-            </Button>
-        </SafeAreaView >
-    )
+            ></Button>
+        </SafeAreaView>
+    );
 }
