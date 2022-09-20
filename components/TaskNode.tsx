@@ -27,6 +27,8 @@ export default function TaskNode(props: { task: Task; nav: any; category: Catego
                     marginBottom: 25 / 2,
                     alignSelf: "center",
                     alignItems: "center",
+                    paddingLeft: 20,
+                    justifyContent: 'flex-start'
                 },
                 styles.shadowProp,
             ]}
@@ -35,7 +37,7 @@ export default function TaskNode(props: { task: Task; nav: any; category: Catego
                 style={{
                     height: 25,
                     width: 25,
-                    borderColor: props.task.color,
+                    borderColor: props.task.color,        
                 }}
                 value={isChecked}
                 onValueChange={() => {
@@ -72,7 +74,9 @@ export default function TaskNode(props: { task: Task; nav: any; category: Catego
                 style={{
                     color: "black",
                     fontSize: 18,
-
+                    marginLeft: 20,
+                    marginRight: 'auto'
+                    
                 }}
             >
                 {props.task.name}
@@ -85,7 +89,7 @@ export default function TaskNode(props: { task: Task; nav: any; category: Catego
 
                     }}
                 >
-                    {(props.task.date.split('T'))}
+                    {/* {props.task.date} */}
                 </Text>
             ) : (<></>)}
 
