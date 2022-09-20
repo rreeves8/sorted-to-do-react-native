@@ -17,7 +17,8 @@ import Swiper from "react-native-swiper";
 import Benefits from "../components/Benefits";
 import { StyleContext } from "../providers/StyleProvider";
 import SortableTasks from "../components/SortableTasks";
-import { BenefitsContext } from "../providers/BenefitsProvider";
+import { Avatar } from "react-native-paper";
+import { Icon } from "../components/Icon";
 
 const fetchTime = (dateObj: Date) => {
     return (
@@ -34,7 +35,7 @@ const fetchTime = (dateObj: Date) => {
 const DateDisplay = () => {
     const { styles } = useContext(StyleContext);
 
-    let months = ["January", "Febuary", "March", "April", "May", "June"];
+    let months = ["January", "Febuary", "March", "April", "May", "June", 'July', "August", 'September'];
 
     let dateObj = new Date();
     const [date, setDate] = useState({
@@ -93,7 +94,6 @@ const DateDisplay = () => {
             <Text
                 style={[
                     styles.dateText,
-                    ,
                     { marginLeft: 20, marginTop: 22, fontSize: 34 },
                 ]}
             >
@@ -112,16 +112,22 @@ const DateDisplay = () => {
 };
 
 export default function Home({ navigation }: any) {
-    const [cateroies, setCateroies] = useState(store.getState().categories);
+    const [categories, setCateroies] = useState(store.getState().categories);
     const isFocused = useIsFocused();
     const [activationDistance, setActivationDistance] = useState(10);
     const [dropDown, setDropDown] = useState(false);
-    const { benefits } = useContext(BenefitsContext);
     const { styles } = useContext(StyleContext);
 
     useEffect(() => {
-        setCateroies(store.getState().categories);
-    }, [isFocused, benefits]);
+        store.dispatch({
+            type: "setCategories",
+            payload: categories,
+        });
+        const unsubscribe = store.subscribe(() => {
+            setCateroies(store.getState().categories);
+        });
+        return unsubscribe;
+    }, [categories]);
 
     return (
         <View
@@ -147,11 +153,21 @@ export default function Home({ navigation }: any) {
                 />
             </SafeAreaView>
             <DateDisplay />
-            {cateroies.length === 0 ? (
-                <View>
+
+            {categories.length === 0 ? (
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                     <Text style={{ ...styles.title, marginTop: 20 }}>
                         Add a Category using the plus!
                     </Text>
+
+                    <View>
+                        <Icon
+                            icon={require('../assets/icons/add.png')}
+                            onPress={() => {
+                                navigation.navigate("NewCategory")
+                            }}
+                        />
+                    </View>
                 </View>
             ) : (
                 <Swiper style={{ height: "100%" }} index={1} loop={false}>
@@ -173,6 +189,7 @@ export default function Home({ navigation }: any) {
                 </Swiper>
             )}
         </View>
+
     );
 }
 /**

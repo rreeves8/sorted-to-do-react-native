@@ -17,7 +17,6 @@ import { secureFetch } from "./storage/Persistent";
 import * as AppleAuthentication from "expo-apple-authentication";
 import Settings from "./screens/Settings";
 import NewBenefit from "./screens/NewBenefit";
-import { BenefitsProvider } from "./providers/BenefitsProvider";
 import { StyleProvider } from "./providers/StyleProvider";
 import * as Font from "expo-font";
 import {
@@ -94,7 +93,6 @@ const Root = () => {
 
     return (
         <StyleProvider theme={getTheme()}>
-            <BenefitsProvider>
                 <ActivityProvider>
                     <StatusBar
                         animated={true}
@@ -128,7 +126,6 @@ const Root = () => {
                         </Stack.Navigator>
                     </NavigationContainer>
                 </ActivityProvider>
-            </BenefitsProvider>
         </StyleProvider>
     );
 };
@@ -149,12 +146,13 @@ export default function App() {
             ) : (
                 <AppLoading
                     startAsync={async () => {
-                        //promise.all causes error
-                        await loadData();
-                        await loadLogIn(setLoggedIn);
-                        await Font.loadAsync({
-                            "SF-Pro": require("./assets/fonts/SF-Pro.ttf"),
-                        });
+                        await Promise.all([
+                            loadData(),
+                            loadLogIn(setLoggedIn),
+                            Font.loadAsync({
+                                "SF-Pro": require("./assets/fonts/SF-Pro.ttf"),
+                            })
+                        ])
                     }}
                     onFinish={() => {
                         setLoaded(true);

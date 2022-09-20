@@ -3,22 +3,37 @@ import { TouchableOpacity, View, Text, Image } from "react-native";
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
 import { Avatar } from "react-native-paper";
 import { Benefit } from "../types";
-import { BenefitsContext } from "../providers/BenefitsProvider";
 import store from "../storage/Store";
 import { StyleContext } from "../providers/StyleProvider";
 
 const BenefitsList = (props: { activationDistance: any }) => {
-    //@ts-ignore
-    const { benefits, setBenefits } = useContext(BenefitsContext);
+    const [benefits, setBenefits] = useState<Array<Benefit>>(store.getState().benefits)
     const { styles } = useContext(StyleContext)
     const [dragging, setDragging] = useState(false)
     const [timeOutHook, setTimeOutHook] = useState<NodeJS.Timeout | null>(null)
 
+    useEffect(() => {
+        let newBenfits: Array<Benefit> = benefits.map((benefit: Benefit, i: number) => {
+            benefit.ranking = i
+            return benefit
+        });
+        store.dispatch({
+            type: "newBenefits",
+            payload: newBenfits,
+        });
+
+        const unsubscribe = store.subscribe(() => {
+            setBenefits(store.getState().benefits);
+        });
+        return unsubscribe;
+    }, [benefits])
+
+    
     useMemo(() => {
         if (dragging) {
             setTimeOutHook(setTimeout(() => setDragging(false), 4000))
         }
-    }, [dragging, benefits])
+    }, [dragging])
 
     const RenderItem = ({ item, drag, isActive }: RenderItemParams<Benefit>) => {
         const [color, setColor] = useState(item.color)
@@ -177,7 +192,6 @@ export default function Benefits({ nav, activationDistance }: any) {
                     <BenefitsList 
                         activationDistance={activationDistance}
                     />
-
             </View>
         </>
     )

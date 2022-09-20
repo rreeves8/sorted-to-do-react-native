@@ -88,21 +88,6 @@ export default function SortableTasks({ navigation }: any) {
         value: 3,
     });
 
-    React.useMemo(() => {
-        store.dispatch({
-            type: "setCategories",
-            payload: categories,
-        });
-    }, [categories]);
-
-    React.useEffect(() => {
-        const unsubscribe = store.subscribe(() => {
-            setCategories(store.getState().categories);
-        });
-
-        return unsubscribe;
-    }, []);
-
     const pickerRef = React.useRef<PickerInstance | null>(null);
 
     const data: Array<PickerItem> = [
@@ -112,7 +97,18 @@ export default function SortableTasks({ navigation }: any) {
         { label: "Benefits Quantity and Sum", value: 4 },
     ];
 
-    useEffect(() => {}, [pickedData]);
+    useEffect(() => {
+        store.dispatch({
+            type: "setCategories",
+            payload: categories,
+        });
+        const unsubscribe = store.subscribe(() => {
+            setCategories(store.getState().categories);
+        });
+        return unsubscribe;
+    }, [categories]);
+
+    useEffect(() => { }, [pickedData]);
 
     return (
         <View

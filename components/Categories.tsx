@@ -20,20 +20,17 @@ function CategoriesList(props: { nav: any; activationDistance: any }) {
         setCategories([...newArr]);
     };
 
-    React.useMemo(() => {
+    useEffect(() => {
         store.dispatch({
             type: "setCategories",
             payload: categories,
         });
-    }, [categories]);
 
-    React.useEffect(() => {
         const unsubscribe = store.subscribe(() => {
             setCategories(store.getState().categories);
         });
-
         return unsubscribe;
-    }, []);
+    }, [categories]);
 
     useMemo(() => {
         if (dragging) {

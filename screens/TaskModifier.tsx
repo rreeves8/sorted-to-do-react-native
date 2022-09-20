@@ -1,5 +1,5 @@
-import RNDateTimePicker from "@react-native-community/datetimepicker";
-import React, { useState, useMemo, useContext } from "react";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState, useMemo, useContext, SyntheticEvent } from "react";
 import { View, Text, SafeAreaView, Image, Switch } from "react-native";
 import { Avatar, Button } from "react-native-paper";
 import store from "../storage/Store";
@@ -15,15 +15,14 @@ export default function EditTask({ route, navigation }: any) {
     const [text, setText] = React.useState(type === "Edit Task" ? task.name : "");
 
     const [selectedBenefits, setSelectedBenefits] = useState(
-        type === "Edit Task"
-            ? benefits.map((e: Benefit, i: number) => {
-                  if (task.benefits.findIndex((t: any) => t.name === e.name)! === -1) {
-                      return true;
-                  } else {
-                      return false;
-                  }
-              })
-            : new Array(benefits.length).fill(false)
+        type === "Edit Task" ?
+            benefits.map((e: Benefit, i: number) => {
+                if (task.benefits.findIndex((t: any) => t.name === e.name)! === -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }) : new Array(benefits.length).fill(false)
     );
 
     const [error, setError] = React.useState(false);
@@ -106,8 +105,8 @@ export default function EditTask({ route, navigation }: any) {
                     );
                 })}
             </View>
-            {/*
-            <View style={{ display: 'flex', flexDirection: 'row', marginTop: 30, marginLeft: 5 }}>
+
+            <View style={{ display: 'flex', flexDirection: 'row', marginTop: 30, marginLeft: 5, marginRight: 30 }}>
                 <Text style={{ color: 'black', fontSize: 25, marginLeft: 24, marginRight: 8, alignSelf: 'center' }}>
                     Due Date:
                 </Text>
@@ -120,13 +119,17 @@ export default function EditTask({ route, navigation }: any) {
                         value={isEnabled}
                     />
                 </View>
+                {(isEnabled) ? (
+                    <DateTimePicker
+                        style={{ width: 200 }}
+                        value={date}
+                        mode="date"
+                        //@ts-ignore
+                        onChange={(event: SyntheticEvent, date: Date) => setDate(date)}
+                    />
+                ) : (<></>)}
             </View>
 
-            {(isEnabled) ? (
-                <RNDateTimePicker onChange={(event: any) => setDate(event)} value={date} display="spinner" mode="datetime" />
-            ) : (<></>)}
-
-            */}
             <Button
                 icon="check"
                 mode="text"
@@ -184,7 +187,7 @@ export default function EditTask({ route, navigation }: any) {
                         navigation.goBack();
                     }
                 }}
-            ></Button>
+            ><></></Button>
         </SafeAreaView>
     );
 }

@@ -1,20 +1,28 @@
-import React, { useContext, useEffect, useMemo } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { View, Text, StyleSheet, SafeAreaView, Image, GestureResponderEvent } from "react-native"
 import { Avatar, Button, } from 'react-native-paper';
-import { CategoryProvider } from "../providers/CategoryProvider";
 import store from "../storage/Store";
 import { Benefit, Task } from "../types";
 import Title from "../components/Title";
 import { TextInput } from "../components/TextInput";
-import { BenefitsContext } from "../providers/BenefitsProvider";
 import { StyleContext } from "../providers/StyleProvider";
 
 export default function NewBenefit({ navigation }: any) {
     const { styles } = useContext(StyleContext)
-    const [text, setText] = React.useState("");
-    const [error, setError] = React.useState(false)
-    //@ts-ignore
-    const { benefits, setBenefits } = useContext(BenefitsContext);
+    const [text, setText] = useState("");
+    const [error, setError] = useState(false)
+    const [benefits, setBenefits] = useState<Array<Benefit>>(store.getState().benefits)
+
+    useEffect(() => {
+        store.dispatch({
+            type: "newBenefits",
+            payload: benefits,
+        });
+        const unsubscribe = store.subscribe(() => {
+            setBenefits(store.getState().benefits);
+        });
+        return unsubscribe;
+    }, [benefits])
 
     useMemo(() => {
         if (error) {
@@ -51,6 +59,7 @@ export default function NewBenefit({ navigation }: any) {
                         prevBenefits.push({
                             name: text,
                             ranking: benefits.length,
+                            color: ""
                         })
                         setBenefits([...prevBenefits])
                         navigation.navigate('Home')

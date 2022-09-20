@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo } from "react"
 import { View, Text, StyleSheet, SafeAreaView, Image, GestureResponderEvent } from "react-native"
 import { Avatar, Button, } from 'react-native-paper';
-import { CategoryProvider } from "../providers/CategoryProvider";
 import store from "../storage/Store";
 import { Category, Task } from "../types";
 import Title from "../components/Title";
@@ -54,7 +53,7 @@ export default function NewCategory({ navigation }: any) {
                         })
 
                         store.dispatch({
-                            type: 'addCategory',
+                            type: 'setCategories',
                             payload: newCat
                         })
                         console.log(store.getState().categories[0].name)
