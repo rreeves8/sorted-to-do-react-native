@@ -1,6 +1,6 @@
-import { BackHandler, Text, StatusBar, Appearance } from "react-native";
-import AppLoading from "expo-app-loading";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { BackHandler, Text, StatusBar, Appearance, View } from "react-native";
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import store from "./storage/Store";
 import { getData, storeData } from "./storage/Persistent";
 import { Category, State } from "./types";
@@ -25,6 +25,8 @@ import {
     authenticateAsync,
 } from "expo-local-authentication";
 import { ActivityProvider } from "./providers/ActivityProvider";
+
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator();
 
@@ -93,39 +95,39 @@ const Root = () => {
 
     return (
         <StyleProvider theme={getTheme()}>
-                <ActivityProvider>
-                    <StatusBar
-                        animated={true}
-                        backgroundColor="#61dafb"
-                        barStyle="dark-content"
-                    />
-                    <NavigationContainer>
-                        <Stack.Navigator screenOptions={{ headerShown: false }}>
-                            <Stack.Screen name="Home" component={Home} />
-                            <Stack.Screen
-                                name="NewBenefit"
-                                component={NewBenefit}
-                            />
-                            <Stack.Screen name="Tasks" component={Tasks} />
-                            <Stack.Screen
-                                name="TaskModifier"
-                                component={TaskModifier}
-                            />
-                            <Stack.Screen
-                                name="NewCategory"
-                                component={NewCategory}
-                            />
-                            <Stack.Screen name="Profile" component={Profile} />
-                            <Stack.Screen
-                                name="Settings"
-                                component={Settings}
-                                options={{
-                                    gestureDirection: "horizontal-inverted",
-                                }}
-                            />
-                        </Stack.Navigator>
-                    </NavigationContainer>
-                </ActivityProvider>
+            <ActivityProvider>
+                <StatusBar
+                    animated={true}
+                    backgroundColor="#61dafb"
+                    barStyle="dark-content"
+                />
+                <NavigationContainer>
+                    <Stack.Navigator screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="Home" component={Home} />
+                        <Stack.Screen
+                            name="NewBenefit"
+                            component={NewBenefit}
+                        />
+                        <Stack.Screen name="Tasks" component={Tasks} />
+                        <Stack.Screen
+                            name="TaskModifier"
+                            component={TaskModifier}
+                        />
+                        <Stack.Screen
+                            name="NewCategory"
+                            component={NewCategory}
+                        />
+                        <Stack.Screen name="Profile" component={Profile} />
+                        <Stack.Screen
+                            name="Settings"
+                            component={Settings}
+                            options={{
+                                gestureDirection: "horizontal-inverted",
+                            }}
+                        />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </ActivityProvider>
         </StyleProvider>
     );
 };
@@ -134,33 +136,47 @@ export default function App() {
     const [loaded, setLoaded] = useState(false);
     const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
 
-    return (
-        <>
-            {loaded ? (
-                <LogInProvider
-                    isLoggedIn={isLoggedIn}
-                    setLoggedIn={setLoggedIn}
-                >
-                    <Root />
-                </LogInProvider>
-            ) : (
-                <AppLoading
-                    startAsync={async () => {
-                        await Promise.all([
-                            loadData(),
-                            loadLogIn(setLoggedIn),
-                            Font.loadAsync({
-                                "SF-Pro": require("./assets/fonts/SF-Pro.ttf"),
-                            })
-                        ])
-                    }}
-                    onFinish={() => {
-                        setLoaded(true);
-                        console.log("done");
-                    }}
-                    onError={(error) => console.log(error)}
-                />
-            )}
-        </>
-    );
+    const preparables = () => {
+        return Promise.all([
+            loadData(),
+            loadLogIn(setLoggedIn),
+            Font.loadAsync({
+                "SF-Pro": require("./assets/fonts/SF-Pro.ttf"),
+            })
+        ])
+    }
+
+    useEffect(() => {
+        (async () => {
+            try {
+                await preparables()
+            } 
+            catch (e) {
+                console.warn(e);
+            } 
+            finally {
+                setLoaded(true);
+            }
+        })();
+
+    }, []);
+
+
+    const onLayoutRootView = useCallback(async () => {
+        if (loaded) {
+          await SplashScreen.hideAsync();
+        }
+    }, [loaded]);
+
+    return !loaded ? null : (
+        <View onLayout={onLayoutRootView}>
+            <LogInProvider
+                isLoggedIn={isLoggedIn}
+                setLoggedIn={setLoggedIn}
+            >
+                <Root />
+            </LogInProvider>
+        </View>
+    )
+    
 }
