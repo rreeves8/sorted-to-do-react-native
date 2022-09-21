@@ -1,6 +1,6 @@
 import { BackHandler, Text, StatusBar, Appearance, View } from "react-native";
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import store from "./storage/Store";
 import { getData, storeData } from "./storage/Persistent";
 import { Category, State } from "./types";
@@ -123,7 +123,7 @@ const Root = () => {
 
 export default function App() {
     const [loaded, setLoaded] = useState(false);
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+    const [isLoggedIn, setLoggedIn] = useState<boolean>(true);
 
     const preparables = () => {
         return Promise.all([
@@ -138,10 +138,10 @@ export default function App() {
         (async () => {
             try {
                 await preparables()
-            } 
+            }
             catch (e) {
                 console.warn(e);
-            } 
+            }
             finally {
                 setLoaded(true);
             }
@@ -149,22 +149,19 @@ export default function App() {
 
     }, []);
 
-
-    const onLayoutRootView = useCallback(async () => {
+    useLayoutEffect(() => {
         if (loaded) {
-          await SplashScreen.hideAsync();
+            SplashScreen.hideAsync();
         }
-    }, [loaded]);
+    }, [loaded])
 
     return !loaded ? null : (
-        <View onLayout={onLayoutRootView}>
-            <LogInProvider
-                isLoggedIn={isLoggedIn}
-                setLoggedIn={setLoggedIn}
-            >
-                <Root />
-            </LogInProvider>
-        </View>
+        <LogInProvider
+            isLoggedIn={isLoggedIn}
+            setLoggedIn={setLoggedIn}
+        >
+            <Root />
+        </LogInProvider>
     )
-    
+
 }
