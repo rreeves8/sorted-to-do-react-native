@@ -14,7 +14,6 @@ import { useAppState } from "@react-native-community/hooks";
 import Profile from "./screens/Profile";
 import { LogInContext, LogInProvider } from "./providers/LoginProvider";
 import { secureFetch } from "./storage/Persistent";
-import * as AppleAuthentication from "expo-apple-authentication";
 import Settings from "./screens/Settings";
 import NewBenefit from "./screens/NewBenefit";
 import { StyleProvider } from "./providers/StyleProvider";
@@ -58,16 +57,6 @@ const isFaceID = async () => {
     }
 };
 
-const loadLogIn = async (setLoggedIn: any) => {
-    console.log("loadLogin");
-    try {
-        let uuid = (await secureFetch("uuid")) as string;
-        let response = await AppleAuthentication.getCredentialStateAsync(uuid);
-        setLoggedIn(response === 1 ? true : false);
-    } catch {
-        setLoggedIn(false);
-    }
-};
 
 const Root = () => {
     const currentAppState = useAppState();
@@ -139,7 +128,6 @@ export default function App() {
     const preparables = () => {
         return Promise.all([
             loadData(),
-            loadLogIn(setLoggedIn),
             Font.loadAsync({
                 "SF-Pro": require("./assets/fonts/SF-Pro.ttf"),
             })
